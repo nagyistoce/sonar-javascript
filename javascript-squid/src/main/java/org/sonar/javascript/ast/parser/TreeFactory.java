@@ -126,6 +126,18 @@ public class TreeFactory {
     EXPRESSION_KIND_BY_PUNCTUATORS.put(EcmaScriptPunctuator.STAR, Kind.MULTIPLY);
     EXPRESSION_KIND_BY_PUNCTUATORS.put(EcmaScriptPunctuator.DIV, Kind.DIVIDE);
     EXPRESSION_KIND_BY_PUNCTUATORS.put(EcmaScriptPunctuator.MOD, Kind.REMAINDER);
+    EXPRESSION_KIND_BY_PUNCTUATORS.put(EcmaScriptPunctuator.EQU, Kind.ASSIGNMENT);
+    EXPRESSION_KIND_BY_PUNCTUATORS.put(EcmaScriptPunctuator.STAR_EQU, Kind.MULTIPLY_ASSIGNMENT);
+    EXPRESSION_KIND_BY_PUNCTUATORS.put(EcmaScriptPunctuator.DIV_EQU, Kind.DIVIDE_ASSIGNMENT);
+    EXPRESSION_KIND_BY_PUNCTUATORS.put(EcmaScriptPunctuator.MOD_EQU, Kind.REMAINDER_ASSIGNMENT);
+    EXPRESSION_KIND_BY_PUNCTUATORS.put(EcmaScriptPunctuator.PLUS_EQU, Kind.PLUS_ASSIGNMENT);
+    EXPRESSION_KIND_BY_PUNCTUATORS.put(EcmaScriptPunctuator.MINUS_EQU, Kind.MINUS_ASSIGNMENT);
+    EXPRESSION_KIND_BY_PUNCTUATORS.put(EcmaScriptPunctuator.SL_EQU, Kind.LEFT_SHIFT_ASSIGNMENT);
+    EXPRESSION_KIND_BY_PUNCTUATORS.put(EcmaScriptPunctuator.SR_EQU, Kind.RIGHT_SHIFT_ASSIGNMENT);
+    EXPRESSION_KIND_BY_PUNCTUATORS.put(EcmaScriptPunctuator.SR_EQU2, Kind.UNSIGNED_RIGHT_SHIFT_ASSIGNMENT);
+    EXPRESSION_KIND_BY_PUNCTUATORS.put(EcmaScriptPunctuator.AND_EQU, Kind.AND_ASSIGNMENT);
+    EXPRESSION_KIND_BY_PUNCTUATORS.put(EcmaScriptPunctuator.XOR_EQU, Kind.XOR_ASSIGNMENT);
+    EXPRESSION_KIND_BY_PUNCTUATORS.put(EcmaScriptPunctuator.OR_EQU, Kind.OR_ASSIGNMENT);
   }
 
   private static final Map<EcmaScriptKeyword, Kind> EXPRESSION_KIND_BY_KEYWORDS = Maps.newEnumMap(EcmaScriptKeyword.class);
@@ -1009,6 +1021,10 @@ public class TreeFactory {
 
   public IdentifierTreeImpl identifierReferenceWithoutYield(AstNode identifier) {
     return new IdentifierTreeImpl(Kind.IDENTIFIER_REFERENCE, InternalSyntaxToken.create(identifier));
+  }
+
+  public ExpressionTree assignmentExpression(Object variable, AstNode operator, ExpressionTree expression) {
+    return new ;
   }
 
   public static class Tuple<T, U> extends AstNode {
