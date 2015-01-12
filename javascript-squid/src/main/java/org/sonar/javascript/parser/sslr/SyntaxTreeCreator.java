@@ -81,7 +81,11 @@ public class SyntaxTreeCreator<T> {
   public T create(ParseNode node, Input input) {
     this.input = input;
     this.trivias.clear();
-    return (T) visit(node);
+    T result = (T) visit(node);
+    if (result instanceof AstNode) {
+      ((AstNode) result).hasToBeSkippedFromAst();
+    }
+    return result;
   }
 
   private Object visit(ParseNode node) {
@@ -107,7 +111,11 @@ public class SyntaxTreeCreator<T> {
       if (node.getChildren().isEmpty()) {
         return Optional.absent();
       } else {
-        return Optional.of(visit(node.getChildren().get(0)));
+        Object child = visit(node.getChildren().get(0));
+        if (child instanceof AstNode) {
+          ((AstNode) child).hasToBeSkippedFromAst();
+        }
+        return Optional.of(child);
       }
     }
 
@@ -116,7 +124,13 @@ public class SyntaxTreeCreator<T> {
     for (ParseNode child : children) {
       Object result = visit(child);
       if (result != null) {
-        convertedChildren.add(result);
+        if (result instanceof AstNode && ((AstNode) result).hasToBeSkippedFromAst()) {
+          for (AstNode resultChild : ((AstNode) result).getChildren()) {
+            convertedChildren.add(resultChild);
+          }
+        } else {
+          convertedChildren.add(result);
+        }
       }
     }
 
@@ -138,7 +152,7 @@ public class SyntaxTreeCreator<T> {
           break;
         }
       }
-      AstNode astNode = new AstNode(rule.getRealAstNodeType(), rule.getName(), token);
+      AstNode astNode = new AstNode(rule, rule.getName(), token);
       for (Object child : convertedChildren) {
         astNode.addChild((AstNode) child);
       }
