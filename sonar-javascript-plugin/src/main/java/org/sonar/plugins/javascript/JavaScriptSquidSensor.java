@@ -104,16 +104,10 @@ public class JavaScriptSquidSensor implements Sensor {
     Collection<CodeVisitor> squidChecks = annotationCheckFactory.getChecks();
 
     for (CodeVisitor visitor : squidChecks) {
-      if (treeVisitors instanceof SubscriptionBaseVisitor) {
-        System.out.println(" sub ---> " + treeVisitors);
-        treeVisitors.add((SubscriptionBaseVisitor) visitor);
-      } else if (treeVisitors instanceof SquidCheck){
-        astNodeVisitors.add((SquidCheck) visitor);
-        System.out.println("check ---> " + treeVisitors);
-      } else if (treeVisitors instanceof SquidAstVisitor) {
-        System.out.println("ast ---> " + treeVisitors);
-        astNodeVisitors.add((SquidAstVisitor) visitor);
-
+      if (visitor instanceof SubscriptionAstTreeVisitor) {
+        treeVisitors.add((SubscriptionAstTreeVisitor) visitor);
+      } else {
+        astNodeVisitors.add(visitor);
       }
     }
 

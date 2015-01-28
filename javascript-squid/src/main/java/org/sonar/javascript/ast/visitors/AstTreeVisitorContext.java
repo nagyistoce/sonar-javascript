@@ -24,16 +24,16 @@ import java.io.File;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.javascript.model.interfaces.Tree;
 import org.sonar.javascript.model.interfaces.declaration.ScriptTree;
+import org.sonar.squidbridge.api.CodeCheck;
+import org.sonar.squidbridge.api.CodeVisitor;
 
 public interface AstTreeVisitorContext {
 
   ScriptTree getTree();
 
-  void addIssue(Tree tree, RuleKey ruleKey, String message);
+  void addIssue(CodeVisitor check, Tree tree, String message);
 
-  void addIssueOnFile(RuleKey ruleKey, String message);
-
-  void addIssue(int line, RuleKey ruleKey, String message);
+  void addIssue(CodeVisitor check, int line, String message);
 
   String getFileKey();
 
