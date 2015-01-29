@@ -19,11 +19,13 @@
  */
 package org.sonar.javascript.ast.visitors;
 
+import org.sonar.javascript.model.implementations.expression.SuperTreeImpl;
 import org.sonar.javascript.model.interfaces.ModuleTree;
 import org.sonar.javascript.model.interfaces.declaration.AccessorMethodDeclarationTree;
 import org.sonar.javascript.model.interfaces.declaration.ArrayBindingPatternTree;
 import org.sonar.javascript.model.interfaces.declaration.BindingPropertyTree;
 import org.sonar.javascript.model.interfaces.declaration.DefaultExportDeclarationTree;
+import org.sonar.javascript.model.interfaces.declaration.ExportClauseTree;
 import org.sonar.javascript.model.interfaces.declaration.FromClauseTree;
 import org.sonar.javascript.model.interfaces.declaration.FunctionDeclarationTree;
 import org.sonar.javascript.model.interfaces.declaration.GeneratorMethodDeclarationTree;
@@ -34,6 +36,7 @@ import org.sonar.javascript.model.interfaces.declaration.InitializedBindingEleme
 import org.sonar.javascript.model.interfaces.declaration.MethodDeclarationTree;
 import org.sonar.javascript.model.interfaces.declaration.NameSpaceExportDeclarationTree;
 import org.sonar.javascript.model.interfaces.declaration.NamedExportDeclarationTree;
+import org.sonar.javascript.model.interfaces.declaration.ObjectBindingPatternTree;
 import org.sonar.javascript.model.interfaces.declaration.ParameterListTree;
 import org.sonar.javascript.model.interfaces.declaration.ScriptTree;
 import org.sonar.javascript.model.interfaces.declaration.SpecifierListTree;
@@ -55,6 +58,7 @@ import org.sonar.javascript.model.interfaces.expression.NewExpressionTree;
 import org.sonar.javascript.model.interfaces.expression.ObjectLiteralTree;
 import org.sonar.javascript.model.interfaces.expression.PairPropertyTree;
 import org.sonar.javascript.model.interfaces.expression.ParenthesisedExpressionTree;
+import org.sonar.javascript.model.interfaces.expression.RestElementTree;
 import org.sonar.javascript.model.interfaces.expression.TaggedTemplateTree;
 import org.sonar.javascript.model.interfaces.expression.TemplateCharactersTree;
 import org.sonar.javascript.model.interfaces.expression.TemplateExpressionTree;
@@ -64,8 +68,11 @@ import org.sonar.javascript.model.interfaces.expression.UnaryExpressionTree;
 import org.sonar.javascript.model.interfaces.expression.YieldExpressionTree;
 import org.sonar.javascript.model.interfaces.statement.BlockTree;
 import org.sonar.javascript.model.interfaces.statement.BreakStatementTree;
+import org.sonar.javascript.model.interfaces.statement.CaseClauseTree;
+import org.sonar.javascript.model.interfaces.statement.CatchBlockTree;
 import org.sonar.javascript.model.interfaces.statement.ContinueStatementTree;
 import org.sonar.javascript.model.interfaces.statement.DebuggerStatementTree;
+import org.sonar.javascript.model.interfaces.statement.DefaultClauseTree;
 import org.sonar.javascript.model.interfaces.statement.DoWhileStatementTree;
 import org.sonar.javascript.model.interfaces.statement.ElseClauseTree;
 import org.sonar.javascript.model.interfaces.statement.EmptyStatementTree;
@@ -154,9 +161,15 @@ public interface TreeVisitor {
 
   void visitSwitchStatement(SwitchStatementTree tree);
 
+  void visitDefaultClause(DefaultClauseTree tree);
+
+  void visitCaseClause(CaseClauseTree tree);
+
   void visitThrowStatement(ThrowStatementTree tree);
 
   void visitTryStatement(TryStatementTree tree);
+
+  void visitCatchBlock(CatchBlockTree tree);
 
   void visitDebugger(DebuggerStatementTree tree);
 
@@ -207,4 +220,13 @@ public interface TreeVisitor {
   void visitThisTree(ThisTree tree);
 
   void visitFunctionExpression(FunctionExpressionTree tree);
+
+  void visitRestElement(RestElementTree tree);
+
+  void visitSuper(SuperTreeImpl tree);
+
+  void visitObjectBindingPattern(ObjectBindingPatternTree tree);
+
+  void visitExportClause(ExportClauseTree tree);
+
 }
