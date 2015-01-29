@@ -63,6 +63,6 @@ public class VariableStatementTreeImpl extends JavaScriptTree implements Variabl
 
   @Override
   public void accept(TreeVisitor visitor) {
-    visitor.visitvariableStatement(this);
+    visitor.visitVariableStatement(this);
   }
 }

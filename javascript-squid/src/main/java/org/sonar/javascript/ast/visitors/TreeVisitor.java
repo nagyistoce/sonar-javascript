@@ -47,15 +47,16 @@ import org.sonar.javascript.model.interfaces.expression.CallExpressionTree;
 import org.sonar.javascript.model.interfaces.expression.ClassTree;
 import org.sonar.javascript.model.interfaces.expression.ComputedPropertyNameTree;
 import org.sonar.javascript.model.interfaces.expression.ConditionalExpressionTree;
-import org.sonar.javascript.model.interfaces.expression.DotMemberExpressionTree;
 import org.sonar.javascript.model.interfaces.expression.FunctionExpressionTree;
 import org.sonar.javascript.model.interfaces.expression.IdentifierTree;
 import org.sonar.javascript.model.interfaces.expression.LiteralTree;
+import org.sonar.javascript.model.interfaces.expression.MemberExpressionTree;
 import org.sonar.javascript.model.interfaces.expression.NewExpressionTree;
 import org.sonar.javascript.model.interfaces.expression.ObjectLiteralTree;
 import org.sonar.javascript.model.interfaces.expression.PairPropertyTree;
 import org.sonar.javascript.model.interfaces.expression.ParenthesisedExpressionTree;
 import org.sonar.javascript.model.interfaces.expression.TaggedTemplateTree;
+import org.sonar.javascript.model.interfaces.expression.TemplateCharactersTree;
 import org.sonar.javascript.model.interfaces.expression.TemplateExpressionTree;
 import org.sonar.javascript.model.interfaces.expression.TemplateLiteralTree;
 import org.sonar.javascript.model.interfaces.expression.ThisTree;
@@ -107,17 +108,13 @@ public interface TreeVisitor {
 
   void visitNamedExportDeclaration(NamedExportDeclarationTree tree);
 
-  void visitvariableStatement(VariableStatementTree tree);
+  void visitVariableStatement(VariableStatementTree tree);
 
   void visitVariableDeclaration(VariableDeclarationTree tree);
 
   void visitClassDeclaration(ClassTree tree);
 
   void visitMethodDeclaration(MethodDeclarationTree tree);
-
-  void visitAccessorMethodDeclaration(AccessorMethodDeclarationTree tree);
-
-  void visitGeneratorMethodDeclaration(GeneratorMethodDeclarationTree tree);
 
   void visitParameterList(ParameterListTree tree);
 
@@ -187,9 +184,7 @@ public interface TreeVisitor {
 
   void visitUnaryExpression(UnaryExpressionTree tree);
 
-  void visitBracketMemberExpression(BracketMemberExpressionTree tree);
-
-  void visitDotMemberExpression(DotMemberExpressionTree tree);
+  void visitMemberExpression(MemberExpressionTree tree);
 
   void visitTaggedTemplate(TaggedTemplateTree tree);
 
@@ -198,6 +193,8 @@ public interface TreeVisitor {
   void visitTemplateLiteral(TemplateLiteralTree tree);
 
   void visitTemplateExpression(TemplateExpressionTree tree);
+
+  void visitTemplateCharacters(TemplateCharactersTree tree);
 
   void visitParenthesisedExpression(ParenthesisedExpressionTree tree);
 

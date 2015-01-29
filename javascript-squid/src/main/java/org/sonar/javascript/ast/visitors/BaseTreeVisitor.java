@@ -22,13 +22,12 @@ package org.sonar.javascript.ast.visitors;
 import org.sonar.javascript.model.implementations.SeparatedList;
 import org.sonar.javascript.model.interfaces.ModuleTree;
 import org.sonar.javascript.model.interfaces.Tree;
-import org.sonar.javascript.model.interfaces.declaration.AccessorMethodDeclarationTree;
 import org.sonar.javascript.model.interfaces.declaration.ArrayBindingPatternTree;
+import org.sonar.javascript.model.interfaces.declaration.BindingElementTree;
 import org.sonar.javascript.model.interfaces.declaration.BindingPropertyTree;
 import org.sonar.javascript.model.interfaces.declaration.DefaultExportDeclarationTree;
 import org.sonar.javascript.model.interfaces.declaration.FromClauseTree;
 import org.sonar.javascript.model.interfaces.declaration.FunctionDeclarationTree;
-import org.sonar.javascript.model.interfaces.declaration.GeneratorMethodDeclarationTree;
 import org.sonar.javascript.model.interfaces.declaration.ImportClauseTree;
 import org.sonar.javascript.model.interfaces.declaration.ImportDeclarationTree;
 import org.sonar.javascript.model.interfaces.declaration.ImportModuleDeclarationTree;
@@ -44,7 +43,6 @@ import org.sonar.javascript.model.interfaces.expression.ArrayLiteralTree;
 import org.sonar.javascript.model.interfaces.expression.ArrowFunctionTree;
 import org.sonar.javascript.model.interfaces.expression.AssignmentExpressionTree;
 import org.sonar.javascript.model.interfaces.expression.BinaryExpressionTree;
-import org.sonar.javascript.model.interfaces.expression.BracketMemberExpressionTree;
 import org.sonar.javascript.model.interfaces.expression.CallExpressionTree;
 import org.sonar.javascript.model.interfaces.expression.ClassTree;
 import org.sonar.javascript.model.interfaces.expression.ComputedPropertyNameTree;
@@ -53,11 +51,13 @@ import org.sonar.javascript.model.interfaces.expression.DotMemberExpressionTree;
 import org.sonar.javascript.model.interfaces.expression.FunctionExpressionTree;
 import org.sonar.javascript.model.interfaces.expression.IdentifierTree;
 import org.sonar.javascript.model.interfaces.expression.LiteralTree;
+import org.sonar.javascript.model.interfaces.expression.MemberExpressionTree;
 import org.sonar.javascript.model.interfaces.expression.NewExpressionTree;
 import org.sonar.javascript.model.interfaces.expression.ObjectLiteralTree;
 import org.sonar.javascript.model.interfaces.expression.PairPropertyTree;
 import org.sonar.javascript.model.interfaces.expression.ParenthesisedExpressionTree;
 import org.sonar.javascript.model.interfaces.expression.TaggedTemplateTree;
+import org.sonar.javascript.model.interfaces.expression.TemplateCharactersTree;
 import org.sonar.javascript.model.interfaces.expression.TemplateExpressionTree;
 import org.sonar.javascript.model.interfaces.expression.TemplateLiteralTree;
 import org.sonar.javascript.model.interfaces.expression.ThisTree;
@@ -84,6 +84,7 @@ import org.sonar.javascript.model.interfaces.statement.VariableDeclarationTree;
 import org.sonar.javascript.model.interfaces.statement.VariableStatementTree;
 import org.sonar.javascript.model.interfaces.statement.WhileStatementTree;
 import org.sonar.javascript.model.interfaces.statement.WithStatementTree;
+import org.sonar.javascript.parser.sslr.Optional;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -154,7 +155,7 @@ public class BaseTreeVisitor implements TreeVisitor {
     scan(tree.object());
   }
 
-  public void visitvariableStatement(VariableStatementTree tree) {
+  public void visitVariableStatement(VariableStatementTree tree) {
     scan(tree.declaration());
   }
 
@@ -229,8 +230,8 @@ public class BaseTreeVisitor implements TreeVisitor {
   }
 
   public void visitWhileStatement(WhileStatementTree tree) {
-   scan(tree.condition());
-   scan(tree.statement());
+    scan(tree.condition());
+    scan(tree.statement());
   }
 
   public void visitDoWhileStatement(DoWhileStatementTree tree) {
@@ -243,68 +244,149 @@ public class BaseTreeVisitor implements TreeVisitor {
   }
 
   public void visitIdentifier(IdentifierTree tree) {
-
+    // no sub-tree
   }
 
-  public void visitBreakStatement(BreakStatementTree tree);
+  public void visitBreakStatement(BreakStatementTree tree) {
+    scan(tree.label());
+  }
 
-  public void visitReturnStatement(ReturnStatementTree tree);
+  public void visitReturnStatement(ReturnStatementTree tree) {
+    scan(tree.expression());
+  }
 
-  public void visitWithStatement(WithStatementTree tree);
+  public void visitWithStatement(WithStatementTree tree) {
+    scan(tree.expression());
+    scan(tree.statement());
+  }
 
-  public void visitSwitchStatement(SwitchStatementTree tree);
+  public void visitSwitchStatement(SwitchStatementTree tree) {
+    scan(tree.expression());
+    scan(tree.cases());
+  }
 
-  public void visitThrowStatement(ThrowStatementTree tree);
+  public void visitThrowStatement(ThrowStatementTree tree) {
+    scan(tree.expression());
+  }
 
-  public void visitTryStatement(TryStatementTree tree);
+  public void visitTryStatement(TryStatementTree tree) {
+    scan(tree.block());
+    scan(tree.catchBlock());
+    scan(tree.finallyBlock());
+  }
 
-  public void visitDebugger(DebuggerStatementTree tree);
+  public void visitDebugger(DebuggerStatementTree tree) {
+    // no sub tree
+  }
 
-  public void visitArrayBindingPattern(ArrayBindingPatternTree tree);
+  public void visitArrayBindingPattern(ArrayBindingPatternTree tree) {
+    // FIXME
+  }
 
-  public void visitObjectLiteral(ObjectLiteralTree tree);
+  public void visitObjectLiteral(ObjectLiteralTree tree) {
+    scan(tree.properties());
+  }
 
-  public void visitBindingProperty(BindingPropertyTree tree);
+  public void visitBindingProperty(BindingPropertyTree tree) {
+    scan(tree.name());
+    scan(tree.value());
+  }
 
-  public void visitInitializedBindingElement(InitializedBindingElementTree tree);
+  public void visitInitializedBindingElement(InitializedBindingElementTree tree) {
+    scan(tree.left());
+    scan(tree.right());
+  }
 
-  public void visitLiteral(LiteralTree tree);
+  public void visitLiteral(LiteralTree tree) {
+    // no sub-tree
+  }
 
-  public void visitArrayLiteral(ArrayLiteralTree tree);
+  public void visitArrayLiteral(ArrayLiteralTree tree) {
+    scan(tree.elements());
+  }
 
-  public void visitAssignmentExpression(AssignmentExpressionTree tree);
+  public void visitAssignmentExpression(AssignmentExpressionTree tree) {
+    scan(tree.variable());
+    scan(tree.expression());
+  }
 
-  public void visitConditionalExpression(ConditionalExpressionTree tree);
+  public void visitConditionalExpression(ConditionalExpressionTree tree) {
+    scan(tree.condition());
+    scan(tree.trueExpression());
+    scan(tree.falseExpression());
+  }
 
-  public void visitArrowFunction(ArrowFunctionTree tree);
+  public void visitArrowFunction(ArrowFunctionTree tree) {
+    scan(tree.parameters());
+    scan(tree.conciseBody());
+  }
 
-  public void visitYieldExpression(YieldExpressionTree tree);
+  public void visitYieldExpression(YieldExpressionTree tree) {
+    scan(tree.argument());
+  }
 
-  public void visitBinaryExpression(BinaryExpressionTree tree);
+  public void visitBinaryExpression(BinaryExpressionTree tree) {
+    scan(tree.leftOperand());
+    scan(tree.rightOperand());
+  }
 
-  public void visitUnaryExpression(UnaryExpressionTree tree);
+  public void visitUnaryExpression(UnaryExpressionTree tree) {
+    scan(tree.expression());
+  }
 
-  public void visitBracketMemberExpression(BracketMemberExpressionTree tree);
+  public void visitMemberExpression(MemberExpressionTree tree) {
+    scan(tree.object());
+    scan(tree.property());
+  }
 
-  public void visitDotMemberExpression(DotMemberExpressionTree tree);
+  public void visitTaggedTemplate(TaggedTemplateTree tree) {
+    scan(tree.callee());
+    scan(tree.template());
+  }
 
-  public void visitTaggedTemplate(TaggedTemplateTree tree);
+  public void visitCallExpression(CallExpressionTree tree) {
+    scan(tree.callee());
+    scan(tree.arguments());
+  }
 
-  public void visitCallExpression(CallExpressionTree tree);
+  public void visitTemplateLiteral(TemplateLiteralTree tree) {
+    scan(tree.strings());
+    scan(tree.expressions());
+  }
 
-  public void visitTemplateLiteral(TemplateLiteralTree tree);
+  public void visitTemplateExpression(TemplateExpressionTree tree) {
+    scan(tree.expression());
+  }
 
-  public void visitTemplateExpression(TemplateExpressionTree tree);
+  public void visitTemplateCharacters(TemplateCharactersTree tree) {
+    // no sub-tree
+  }
 
-  public void visitParenthesisedExpression(ParenthesisedExpressionTree tree);
+  public void visitParenthesisedExpression(ParenthesisedExpressionTree tree) {
+    scan(tree.expression());
+  }
 
-  public void visitComputedPropertyName(ComputedPropertyNameTree tree);
+  public void visitComputedPropertyName(ComputedPropertyNameTree tree) {
+    scan(tree.expression());
+  }
 
-  public void visitPairProperty(PairPropertyTree tree);
+  public void visitPairProperty(PairPropertyTree tree) {
+    scan(tree.key());
+    scan(tree.value());
+  }
 
-  public void visitNewExpression(NewExpressionTree tree);
+  public void visitNewExpression(NewExpressionTree tree) {
+    scan(tree.expression());
+    scan(tree.arguments());
+  }
 
-  public void visitThisTree(ThisTree tree);
+  public void visitThisTree(ThisTree tree) {
+    // no sub-tree
+  }
 
-  public void visitFunctionExpression(FunctionExpressionTree tree);
+  public void visitFunctionExpression(FunctionExpressionTree tree) {
+    scan(tree.name());
+    scan(tree.parameters());
+    scan(tree.body());
+  }
 }

@@ -93,4 +93,5 @@ public class ContinueStatementTreeImpl extends JavaScriptTree implements Continu
   public void accept(TreeVisitor visitor) {
     visitor.visitContinueStatement(this);
   }
+
 }
