@@ -19,17 +19,22 @@
  */
 package org.sonar.javascript.ast;
 
+import static org.fest.assertions.Assertions.assertThat;
 import org.junit.Test;
 import org.sonar.javascript.ast.resolve.SymbolModel;
 import org.sonar.javascript.model.JavaScriptTreeModelTest;
-import org.sonar.javascript.model.interfaces.Tree;
 import org.sonar.javascript.model.interfaces.declaration.ScriptTree;
+
+import java.io.File;
 
 public abstract class SymbolModelTest extends JavaScriptTreeModelTest {
 
   @Test
-  public void test() throws Exception {
-    ScriptTree tree = parse("var a; function f(p) { var a; }", Tree.Kind.SCRIPT);
-    SymbolModel symbolModel = SymbolModel.createFor()
+  public void scope() throws Exception {
+    ScriptTree tree = (ScriptTree) p.parse(new File("src/test/resources/ast/symbolModel.js"));
+    SymbolModel symbolModel = SymbolModel.createFor(tree);
+
+    assertThat(symbolModel.getScopeFor(tree)).isNotNull();
+    assertThat(symbolModel.getScopeFor(tree).lookupSymbol("f")).hasSize(1);
   }
 }

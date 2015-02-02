@@ -19,8 +19,10 @@
  */
 package org.sonar.javascript.ast.resolve;
 
+import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.ImmutableList;
 import org.sonar.javascript.model.interfaces.Tree;
 import org.sonar.javascript.model.interfaces.declaration.ScriptTree;
 
@@ -41,6 +43,10 @@ public class SymbolModel {
 
   public void setScopeFor(Tree tree, Scope scope) {
     scopes.put(tree, scope);
+  }
+
+  public Scope getScopeFor(Tree tree) {
+    return scopes.get(tree);
   }
 
   public static class Scope {
@@ -68,6 +74,15 @@ public class SymbolModel {
     public void addSymbolToScope(String name, Tree tree) {
       symbols.put(name, new Symbol(name, tree));
     }
+
+    public List<Symbol> lookupSymbol(String name) {
+      Scope scope = this;
+      while (scope != null && !scope.symbols.containsKey(name)) {
+        scope = scope.outer;
+      }
+      return scope == null ? ImmutableList.<Symbol>of() : scope.symbols.get(name);
+    }
+
   }
 
   public static class Symbol {

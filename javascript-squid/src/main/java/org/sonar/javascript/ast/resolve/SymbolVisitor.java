@@ -47,6 +47,7 @@ public class SymbolVisitor extends BaseTreeVisitor {
   @Override
   public void visitScript(ScriptTree tree) {
     newScope();
+    setScopeForTree(tree);
     super.visitScript(tree);
   }
 
