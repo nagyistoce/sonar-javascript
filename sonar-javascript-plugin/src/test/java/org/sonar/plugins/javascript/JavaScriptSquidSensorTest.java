@@ -131,8 +131,7 @@ public class JavaScriptSquidSensorTest {
       mock(ResourcePerspectives.class),
       new DefaultFileSystem(),
       new NoSonarFilter(mock(SensorContext.class)),
-      new PathResolver(),
-      CUSTOM_RULES);
+      new PathResolver());
 
     assertThat(sensor.toString()).isNotNull();
   }

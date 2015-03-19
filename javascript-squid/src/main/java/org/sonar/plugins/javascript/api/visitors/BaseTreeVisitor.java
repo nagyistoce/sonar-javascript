@@ -23,7 +23,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import org.sonar.javascript.JavaScriptFileScanner;
+import org.sonar.plugins.javascript.api.JavaScriptFileScanner;
 import org.sonar.javascript.ast.visitors.AstTreeVisitorContext;
 import org.sonar.javascript.ast.visitors.TreeVisitor;
 import org.sonar.javascript.model.internal.expression.SuperTreeImpl;
