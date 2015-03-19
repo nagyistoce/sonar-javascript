@@ -24,7 +24,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import com.google.common.collect.Lists;
+import javax.annotation.Nullable;
+
+import com.google.common.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.Sensor;
@@ -48,11 +50,12 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.javascript.EcmaScriptConfiguration;
 import org.sonar.javascript.JavaScriptAstScanner;
-import org.sonar.plugins.javascript.api.JavaScriptFileScanner;
+import org.sonar.javascript.JavaScriptFileScanner;
 import org.sonar.javascript.api.EcmaScriptMetric;
 import org.sonar.javascript.ast.visitors.VisitorsBridge;
 import org.sonar.javascript.checks.CheckList;
 import org.sonar.javascript.metrics.FileLinesVisitor;
+import org.sonar.plugins.javascript.api.CustomJavaScriptRulesDefinition;
 import org.sonar.plugins.javascript.core.JavaScript;
 import org.sonar.squidbridge.AstScanner;
 import org.sonar.squidbridge.SquidAstVisitor;
@@ -66,6 +69,8 @@ import org.sonar.squidbridge.indexer.QueryByParent;
 import org.sonar.squidbridge.indexer.QueryByType;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
+import com.google.common.collect.Lists;
+
 public class JavaScriptSquidSensor implements Sensor {
 
   private static final Logger LOG = LoggerFactory.getLogger(JavaScriptSquidSensor.class);
@@ -73,6 +78,7 @@ public class JavaScriptSquidSensor implements Sensor {
   private static final Number[] FILES_DISTRIB_BOTTOM_LIMITS = {0, 5, 10, 20, 30, 60, 90};
 
   private final Checks<CodeVisitor> checks;
+  private final List<JavaScriptFileScanner> customVisitors;
   private final FileLinesContextFactory fileLinesContextFactory;
   private final ResourcePerspectives resourcePerspectives;
   private final FileSystem fileSystem;
@@ -84,10 +90,19 @@ public class JavaScriptSquidSensor implements Sensor {
   private AstScanner<LexerlessGrammar> scanner;
 
   public JavaScriptSquidSensor(CheckFactory checkFactory, FileLinesContextFactory fileLinesContextFactory,
-    ResourcePerspectives resourcePerspectives, FileSystem fileSystem, NoSonarFilter noSonarFilter, PathResolver pathResolver) {
+                               ResourcePerspectives resourcePerspectives, FileSystem fileSystem, NoSonarFilter noSonarFilter,
+                               PathResolver pathResolver) {
+    this(checkFactory, fileLinesContextFactory, resourcePerspectives, fileSystem, noSonarFilter, pathResolver, null);
+  }
+
+  public JavaScriptSquidSensor(CheckFactory checkFactory, FileLinesContextFactory fileLinesContextFactory,
+    ResourcePerspectives resourcePerspectives, FileSystem fileSystem, NoSonarFilter noSonarFilter,
+    PathResolver pathResolver, @Nullable CustomJavaScriptRulesDefinition[] customRulesDefinition) {
+
     this.checks = checkFactory
       .<CodeVisitor>create(CheckList.REPOSITORY_KEY)
       .addAnnotatedChecks(CheckList.getChecks());
+    this.customVisitors = getCustomChecks(checkFactory, customRulesDefinition);
     this.fileLinesContextFactory = fileLinesContextFactory;
     this.resourcePerspectives = resourcePerspectives;
     this.fileSystem = fileSystem;
@@ -117,6 +132,8 @@ public class JavaScriptSquidSensor implements Sensor {
         astNodeVisitors.add(visitor);
       }
     }
+    // Add custom visitors
+    treeVisitors.addAll(customVisitors);
 
     astNodeVisitors.add(new VisitorsBridge(treeVisitors));
     astNodeVisitors.add(new FileLinesVisitor(fileLinesContextFactory, fileSystem, pathResolver));
@@ -214,6 +231,22 @@ public class JavaScriptSquidSensor implements Sensor {
         }
       }
     }
+  }
+
+  @VisibleForTesting
+  protected List<JavaScriptFileScanner> getCustomChecks(CheckFactory checkFactory, @Nullable CustomJavaScriptRulesDefinition[] customRulesDefinition) {
+    List<JavaScriptFileScanner> customVisitors = Lists.newArrayList();
+
+    if (customRulesDefinition != null) {
+      for (CustomJavaScriptRulesDefinition rulesDefinition : customRulesDefinition) {
+
+        customVisitors.addAll(
+          checkFactory.<JavaScriptFileScanner>create(rulesDefinition.repositoryKey())
+            .addAnnotatedChecks(rulesDefinition.checkClasses())
+            .all());
+      }
+    }
+    return customVisitors;
   }
 
   @Override

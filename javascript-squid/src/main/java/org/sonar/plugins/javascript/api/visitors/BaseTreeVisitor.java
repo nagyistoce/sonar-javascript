@@ -17,13 +17,15 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.javascript.ast.visitors;
+package org.sonar.plugins.javascript.api.visitors;
 
 import java.util.List;
 
 import javax.annotation.Nullable;
 
-import org.sonar.plugins.javascript.api.JavaScriptFileScanner;
+import org.sonar.javascript.JavaScriptFileScanner;
+import org.sonar.javascript.ast.visitors.AstTreeVisitorContext;
+import org.sonar.javascript.ast.visitors.TreeVisitor;
 import org.sonar.javascript.model.internal.expression.SuperTreeImpl;
 import org.sonar.plugins.javascript.api.tree.ModuleTree;
 import org.sonar.plugins.javascript.api.tree.Tree;

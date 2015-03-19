@@ -19,6 +19,13 @@
  */
 package org.sonar.plugins.javascript;
 
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.SensorContext;
@@ -36,22 +43,36 @@ import org.sonar.api.resources.File;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.scan.filesystem.PathResolver;
+import org.sonar.check.Rule;
+import org.sonar.check.RuleProperty;
+import org.sonar.plugins.javascript.api.CustomJavaScriptRulesDefinition;
+import org.sonar.plugins.javascript.api.visitors.BaseTreeVisitor;
 import org.sonar.plugins.javascript.core.JavaScript;
 import org.sonar.test.TestUtils;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 public class JavaScriptSquidSensorTest {
 
-  private final DefaultFileSystem fileSystem = new DefaultFileSystem();
+  private final DefaultFileSystem FS = new DefaultFileSystem();
   private FileLinesContextFactory fileLinesContextFactory;
   private final Project project = new Project("project");
   private CheckFactory checkFactory = new CheckFactory(mock(ActiveRules.class));
+  private final CustomJavaScriptRulesDefinition[] CUSTOM_RULES = {new CustomJavaScriptRulesDefinition() {
+    @Override
+    public String repositoryName() {
+      return "custom name";
+    }
+
+    @Override
+    public String repositoryKey() {
+      return "customKey";
+    }
+
+    @Override
+    public Class[] checkClasses() {
+      Class[] checks = {MyCustomRule.class};
+      return checks;
+    }
+  }};
 
   @Before
   public void setUp() {
@@ -66,7 +87,7 @@ public class JavaScriptSquidSensorTest {
   public void should_execute_if_js_files() {
     DefaultFileSystem localFS = new DefaultFileSystem();
     JavaScriptSquidSensor sensor = new JavaScriptSquidSensor(checkFactory, fileLinesContextFactory, mock(ResourcePerspectives.class), localFS, new NoSonarFilter(
-      mock(SensorContext.class)), new PathResolver());
+      mock(SensorContext.class)), new PathResolver(), CUSTOM_RULES);
 
     // no JS files -> do not execute
     assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
@@ -78,16 +99,16 @@ public class JavaScriptSquidSensorTest {
 
   @Test
   public void should_analyse() {
-    fileSystem.setBaseDir(TestUtils.getResource("/cpd/"));
-    fileSystem.add(new DefaultInputFile("Person.js")
+    FS.setBaseDir(TestUtils.getResource("/cpd/"));
+    FS.add(new DefaultInputFile("Person.js")
       .setAbsolutePath(TestUtils.getResource("/cpd/Person.js").getAbsolutePath())
       .setType(InputFile.Type.MAIN)
       .setLanguage(JavaScript.KEY));
 
     SensorContext context = mock(SensorContext.class);
-    when(context.getResource(any(Resource.class))).thenReturn(File.create((new PathResolver()).relativePath(fileSystem.baseDir(), TestUtils.getResource("/cpd/Person.js"))));
-    JavaScriptSquidSensor sensor = new JavaScriptSquidSensor(checkFactory, fileLinesContextFactory, mock(ResourcePerspectives.class), fileSystem, new NoSonarFilter(
-      mock(SensorContext.class)), new PathResolver());
+    when(context.getResource(any(Resource.class))).thenReturn(File.create((new PathResolver()).relativePath(FS.baseDir(), TestUtils.getResource("/cpd/Person.js"))));
+    JavaScriptSquidSensor sensor = new JavaScriptSquidSensor(checkFactory, fileLinesContextFactory, mock(ResourcePerspectives.class), FS, new NoSonarFilter(
+      mock(SensorContext.class)), new PathResolver(), CUSTOM_RULES);
 
     sensor.analyse(project, context);
 
@@ -108,9 +129,25 @@ public class JavaScriptSquidSensorTest {
       checkFactory,
       fileLinesContextFactory,
       mock(ResourcePerspectives.class),
-      new DefaultFileSystem(), new NoSonarFilter(mock(SensorContext.class)), new PathResolver());
+      new DefaultFileSystem(),
+      new NoSonarFilter(mock(SensorContext.class)),
+      new PathResolver(),
+      CUSTOM_RULES);
 
     assertThat(sensor.toString()).isNotNull();
+  }
+
+  @Rule(
+    key = "key",
+    name = "name",
+    description = "desc",
+    tags = {"bug"})
+  public class MyCustomRule extends BaseTreeVisitor {
+    @RuleProperty(
+      key = "customParam",
+      description = "Custome parameter",
+      defaultValue = "value")
+    public String customParam = "value";
   }
 
 }
