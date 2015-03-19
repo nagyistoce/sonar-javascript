@@ -23,8 +23,8 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import org.sonar.javascript.JavaScriptFileScanner;
-import org.sonar.javascript.model.interfaces.declaration.ScriptTree;
+import org.sonar.plugins.javascript.api.JavaScriptFileScanner;
+import org.sonar.plugins.javascript.api.tree.declaration.ScriptTree;
 import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.sslr.parser.LexerlessGrammar;

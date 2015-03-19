@@ -27,12 +27,12 @@ import org.sonar.javascript.ast.visitors.AstTreeVisitorContext;
 import org.sonar.javascript.ast.visitors.BaseTreeVisitor;
 import org.sonar.javascript.ast.visitors.SyntacticEquivalence;
 import org.sonar.javascript.checks.utils.CheckUtils;
-import org.sonar.javascript.model.interfaces.Tree;
-import org.sonar.javascript.model.interfaces.expression.BinaryExpressionTree;
-import org.sonar.javascript.model.interfaces.expression.ExpressionTree;
-import org.sonar.javascript.model.interfaces.expression.IdentifierTree;
-import org.sonar.javascript.model.interfaces.expression.MemberExpressionTree;
-import org.sonar.javascript.model.interfaces.expression.ParenthesisedExpressionTree;
+import org.sonar.plugins.javascript.api.tree.Tree;
+import org.sonar.plugins.javascript.api.tree.expression.BinaryExpressionTree;
+import org.sonar.plugins.javascript.api.tree.expression.ExpressionTree;
+import org.sonar.plugins.javascript.api.tree.expression.IdentifierTree;
+import org.sonar.plugins.javascript.api.tree.expression.MemberExpressionTree;
+import org.sonar.plugins.javascript.api.tree.expression.ParenthesisedExpressionTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -110,7 +110,7 @@ public class NullDereferenceInConditionalCheck extends BaseTreeVisitor {
     @Override
     public void visitMemberExpression(MemberExpressionTree tree) {
       if (SyntacticEquivalence.areEquivalent(tree.object(), nullExpression)) {
-        context.addIssue(NullDereferenceInConditionalCheck.this, nullExpression, 
+        context.addIssue(NullDereferenceInConditionalCheck.this, nullExpression,
           String.format(MESSAGE_FORMAT, CheckUtils.asString(nullExpression)));
       }
       super.visitMemberExpression(tree);

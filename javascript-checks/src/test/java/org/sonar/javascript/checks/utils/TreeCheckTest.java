@@ -21,7 +21,7 @@ package org.sonar.javascript.checks.utils;
 
 import com.google.common.collect.Lists;
 import org.sonar.javascript.JavaScriptAstScanner;
-import org.sonar.javascript.JavaScriptFileScanner;
+import org.sonar.plugins.javascript.api.JavaScriptFileScanner;
 import org.sonar.javascript.ast.visitors.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceFile;
 

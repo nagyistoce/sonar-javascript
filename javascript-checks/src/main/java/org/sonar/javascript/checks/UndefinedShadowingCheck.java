@@ -28,10 +28,10 @@ import org.sonar.check.Rule;
 import org.sonar.javascript.ast.visitors.AstTreeVisitorContext;
 import org.sonar.javascript.checks.utils.CheckUtils;
 import org.sonar.javascript.checks.utils.SubscriptionBaseVisitor;
-import org.sonar.javascript.model.implementations.statement.VariableDeclarationTreeImpl;
-import org.sonar.javascript.model.interfaces.Tree;
-import org.sonar.javascript.model.interfaces.Tree.Kind;
-import org.sonar.javascript.model.interfaces.expression.IdentifierTree;
+import org.sonar.javascript.model.internal.statement.VariableDeclarationTreeImpl;
+import org.sonar.plugins.javascript.api.tree.Tree;
+import org.sonar.plugins.javascript.api.tree.Tree.Kind;
+import org.sonar.plugins.javascript.api.tree.expression.IdentifierTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
